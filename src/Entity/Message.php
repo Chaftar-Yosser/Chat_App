@@ -2,9 +2,8 @@
 
 namespace App\Entity;
 
-use App\Entity\TimesTamp;
+
 use App\Repository\MessageRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 
@@ -31,6 +30,24 @@ class Message
 
     #[ORM\ManyToOne(targetEntity: Conversation::class, inversedBy: 'messages')]
     private $conversation;
+
+    private $mine;
+
+    /**
+     * @return mixed
+     */
+    public function getMine()
+    {
+        return $this->mine;
+    }
+
+    /**
+     * @param mixed $mine
+     */
+    public function setMine($mine): void
+    {
+        $this->mine = $mine;
+    }
 
 
     public function getId(): ?int

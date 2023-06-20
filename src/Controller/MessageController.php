@@ -2,17 +2,109 @@
 
 namespace App\Controller;
 
+use App\Entity\Conversation;
+use App\Entity\Message;
+use App\Repository\MessageRepository;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+
+#[Route('/messages', name: 'messages.')]
 class MessageController extends AbstractController
 {
-    #[Route('/message', name: 'app_message')]
-    public function index(): Response
+    const ATTRIBUTES_TO_SERIALIZE = ['id' , 'content' , 'createdAt' , 'mine'];
+
+    /**
+     * @var MessageRepository
+     */
+    private $messageRepository;
+    /**
+     * @var EntityManagerInterface
+     */
+    private  $entityManager;
+    /**
+     * @var UserRepository
+     */
+    private UserRepository $userRepository;
+
+    public  function  __construct(EntityManagerInterface $entityManager , MessageRepository $messageRepository , UserRepository $userRepository)
     {
-        return $this->render('message/index.html.twig', [
-            'controller_name' => 'MessageController',
+        $this->entityManager = $entityManager;
+        $this->messageRepository = $messageRepository;
+        $this->userRepository = $userRepository;
+
+    }
+
+    #[Route('/{id}', name: 'getMessages' , methods: 'GET')]
+    /**
+     * @param Request $request
+     * @param Conversation $conversation
+     * @return Response
+     */
+    public function index(Request $request , Conversation $conversation)
+    {
+        // can i view the conversation
+        $this->denyAccessUnlessGranted('view' , $conversation);
+
+        $messages = $this->messageRepository->findMessageByConversationId($conversation->getId());
+//dd($this->getUser(), $messages);
+        /**
+         * @var $message Message
+         */
+        array_map(function ($message){
+//            dd($message , $message->getUser() , $message->getUser()->getId());
+            $message->setMine(
+
+                $message->getUser()->getId() === $this->getUser()->getId()? true: false);
+        },(array)$messages);
+
+
+        return $this->json($messages, Response::HTTP_OK, [], [
+            'attributes' => self::ATTRIBUTES_TO_SERIALIZE
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Conversation $conversation
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    #[Route('/{id}', name: 'newMessage', methods: 'POST')]
+    public function newMessage(Request $request , Conversation $conversation){
+
+        // TODO : put everything back
+        $user = $this->getUser();
+        $content = $request->get('content',null);
+
+        $message =new Message();
+        $message->setContent($content);
+        $message->setUser($this->userRepository->findOneBy(['id' => 2    ]));
+        $message->setMine(true);
+
+        $conversation->addMessage($message);
+        $conversation->setLastMessage($message);
+
+        $this->entityManager->getConnection()->beginTransaction();
+
+        try {
+            $this->entityManager->persist($message);
+            $this->entityManager->persist($conversation);
+
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+
+        return $this->json($message ,Response::HTTP_CREATED, [] ,[
+            'attributes' => self::ATTRIBUTES_TO_SERIALIZE
         ]);
     }
 }

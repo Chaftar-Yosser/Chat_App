@@ -6,8 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait TimesTamp
 {
-    #[ORM\Column(type: "datetime")]
-    private $createdAt;
+    #[ORM\Column(type: "datetime" ,nullable: false)]
+    private \DateTime $createdAt ;
+
 
     /**
      * @return mixed
@@ -17,10 +18,15 @@ trait TimesTamp
         return $this->createdAt;
     }
 
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
     /**
-     * @ORM\prePersist()
+     * @ORM\PrePersist()
      */
-    public function prePersist()
+    public function prePersist(): \DateTime
     {
         return $this->createdAt = new \DateTime();
     }

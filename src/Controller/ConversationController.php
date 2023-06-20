@@ -108,10 +108,8 @@ class ConversationController extends AbstractController
     public function getConvs() {
 
         $conversations = $this->conversationRepository->findConversationByUser($this->getUser()->getId());
-        dd($conversations);
-        return $this->json([
-
-        ]);
+//        dd($conversations);
+        return $this->json($conversations);
     }
 
 
