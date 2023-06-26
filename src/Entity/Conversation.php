@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping as Index;
 
 #[ORM\Entity(repositoryClass: ConversationRepository::class)]
-#[ORM\Index(name: 'created_at_index', columns: ['last_message_id'])]
+#[ORM\Index(columns: ['last_message_id'], name: 'created_at_index')]
 
 
 class Conversation
@@ -20,14 +20,14 @@ class Conversation
     private ?int $id = null;
 
 
-    #[ORM\OneToMany(targetEntity: Participant::class, mappedBy: 'conversation')]
+    #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: Participant::class)]
     private $participants;
 
     #[ORM\OneToOne(targetEntity: Message::class)]
     #[ORM\JoinColumn(name: 'last_message_id', referencedColumnName: 'id')]
     private $lastMessage;
 
-    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'conversation')]
+    #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: Message::class)]
     private $messages;
 
     public function __construct()

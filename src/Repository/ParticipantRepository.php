@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Participant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Participant>
@@ -63,4 +64,21 @@ class ParticipantRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    public function findParticipantByConversationIdAndUserId(int $conversationId, int $userId)
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb
+            ->where(
+                $qb->expr()->andX(
+                    $qb->expr()->eq('p.conversation', ':conversationId'),
+                    $qb->expr()->neq('p.user', ':userId'),
+                )
+            )
+            ->setParameters([
+                'conversationId' => $conversationId,
+                'userId' => $userId
+            ])
+        ;
+        return $qb->getQuery()->getOneOrNullResult();
+    }
 }
