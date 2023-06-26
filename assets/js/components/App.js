@@ -10,25 +10,10 @@ class App extends React.Component {
             <div className="container py-5 px-4">
                 <div className="row rounded-lg overflow-hidden shadow">
                     <Left/>
-                    <Switch>
-
-                                <Blank/>
-                        <Right/>
-                    </Switch>
+                    {/*<Blank/>*/}
+                    <Right/>
                 </div>
             </div>
-
-
-            // <div className="container py-5 px-4">
-            //     <div className="row rounded-lg overflow-hidden shadow">
-            //         {/*<Left/>*/}
-            //         {/*<Right/>*/}
-            //         <Blank/>
-            //     </div>
-            // </div>
-
-
-
         )
     }
 }

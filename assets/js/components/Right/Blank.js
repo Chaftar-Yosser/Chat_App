@@ -8,10 +8,7 @@ class Blank extends React.Component {
 
     render() {
         return (
-            <div className="col-7 px-0" style={{width: '100%', backgroundColor: 'white'}}>
-                {/*<Left/>*/}
-                {/*<Right/>*/}
-            </div>
+            <div className="col-7 px-0" style={{width: '100%', backgroundColor: 'white'}}></div>
         );
     }
 }
