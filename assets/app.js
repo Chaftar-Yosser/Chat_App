@@ -7,18 +7,27 @@
 
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
-import 'bootstrap/dist/css/bootstrap.css';
+// import 'bootstrap/dist/css/bootstrap.css';
 
 
 import React from 'react';
 import ReactDom from 'react-dom';
 import App from "./js/components/App";
+import store from "./js/store";
+import {Provider} from 'react-redux';
+import { MemoryRouter } from "react-router-dom";
 
 
 
 ReactDom.render(
     (
-        <App/>
+        <Provider store={store}>
+            {/*MemoryRouter :  t5alii url men fouk yok3ed nasfouu  */}
+            <MemoryRouter>
+                <App/>
+            </MemoryRouter>
+        </Provider>
+
     ),
     document.querySelector('#app')
 )
