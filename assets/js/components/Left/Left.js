@@ -12,7 +12,17 @@ class Left extends React.Component {
     componentDidMount() {
         // call fetch conversations
         // console.log("helloo")
-        this.props.fetchConversations();
+        this.props.fetchConversations().then(() => {
+            let url = new URL(this.props.hubUrl);
+            url.searchParams.append('topic' , `/conversation/${this.props.username}`);
+            const eventSoucre = new EventSource(url , {
+                withCredentials: true
+            });
+            eventSoucre.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                this.props.setLastMessages(data , data.conversation.id);
+            }
+        });
     }
 
     render() {

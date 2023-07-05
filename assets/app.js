@@ -16,8 +16,9 @@ import App from "./js/components/App";
 import store from "./js/store";
 import {Provider} from 'react-redux';
 import { MemoryRouter } from "react-router-dom";
+import * as actionCreators from './js/actions/conversation'
 
-
+store.dispatch(actionCreators.setUsername(document.querySelector('#app').dataset.username));
 
 ReactDom.render(
     (
